@@ -1,44 +1,53 @@
-import React, { useState } from "react";
-import QuestionDisplay from "./QuestionDisplay";
+import { useEffect, useState } from "react";
 
-const categories = ['science', 'history', 'literature', 'geography', 'math'];
+function GameTable() {
+  const [questions, setQuestions] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
-const GameTable = () => {
-    const [questionData, setQuestionData] = useState(null);
+  useEffect(() => {
+    const controller = new AbortController();
 
-    const fetchQuestion = async (category) => {
-        try{
-            const response = await fetch(`https://jservice.io/api/random?count=1&category=${category}`);
-            const data = await response.json();
-            setQuestionData(data[0]);
-        }catch(error){
-            console.error('Error fetching question:', error);
+    const fetchQuestions = async () => {
+      try {
+        const response = await fetch("https://opentdb.com/api.php?amount=10", {
+          signal: controller.signal,
+        });
+        if (!response.ok) {
+          throw new Error("Failed to fetch questions");
         }
+        const data = await response.json();
+        setQuestions(data.results || []);
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          console.error("Error fetching questions:", error);
+        }
+      }
     };
 
-    return(
-        <div>
-            <table className="game-table">
-                <thead>
-                    <tr>
-                        {categories.map((category) =>(
-                            <th key={category}>{category.toLocaleUpperCase()}</th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        {categories.map((category) =>(
-                            <td key={category}>
-                                <button onClick={() => fetchQuestion(category)}>Get Question</button>
-                            </td>
-                        ))}
-                    </tr>
-                </tbody>
-            </table>
-            {questionData && <QuestionDisplay questionData={questionData} />}
-        </div>
+    fetchQuestions();
+
+    // Cleanup fetch on component unmount
+    return () => controller.abort();
+  }, []);
+
+  const getNextQuestion = () => {
+    setCurrentQuestionIndex((prevIndex) =>
+      prevIndex < questions.length - 1 ? prevIndex + 1 : 0
     );
+  };
+
+  return (
+    <div>
+      {questions.length > 0 ? (
+        <div>
+          <h2 dangerouslySetInnerHTML={{ __html: questions[currentQuestionIndex].question }} />
+          <button onClick={getNextQuestion}>Next Question</button>
+        </div>
+      ) : (
+        <p>Loading questions...</p>
+      )}
+    </div>
+  );
 }
 
 export default GameTable;
