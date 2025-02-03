@@ -1,33 +1,13 @@
-body{
-  background-color: #0078ff;
-  align-items: center;
-  text-align: center;
-  padding: 0;
-  margin: 0;
-  justify-content: center;
-}
-.game-table {
-  width: 80%;
-  margin: 20px auto;
-  border-collapse: collapse;
-}
-
-.game-table th, .game-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
-}
-
-.question-display {
-  margin-top: 20px;
-  text-align: center;
-}
-
-button {
-  padding: 8px 16px;
-  cursor: pointer;
-  background: #0078ff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-}
+.app {
+    text-align: center;
+    padding: 20px;
+    background-color: #f0f0f0;
+    min-height: 100vh;
+    min-width: 100vw;
+  }
+  
+  h1 {
+    color: #2c3e50;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
